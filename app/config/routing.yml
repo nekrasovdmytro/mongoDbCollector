@@ -1,0 +1,8 @@
+big_data_bundle_big_data:
+    resource: "@BigDataBundleBigDataBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+app:
+    resource: "@AppBundle/Controller/"
+    type:     annotation
