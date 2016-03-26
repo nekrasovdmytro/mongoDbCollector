@@ -30,16 +30,26 @@ abstract class AbstractEntity
     /*
      * @return array
      * */
-    public function getData()
+    final public function getData()
     {
-        return $this->data;
+        $properties = $this->getProperties();
+
+        return array_merge($properties, $this->data);
     }
 
     /*
      * @parma array data
      * */
-    public function setData(array $data)
+    final public function setData(array $data)
     {
         $this->data = $data;
+    }
+
+    protected function getProperties()
+    {
+        $properties = get_object_vars($this);
+        unset($properties['data']);
+
+        return $properties;
     }
 }

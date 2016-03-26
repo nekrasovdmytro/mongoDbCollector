@@ -22,7 +22,7 @@ abstract class AbstractMongoManager extends AbstractManager
 
     protected function getEntityData()
     {
-        return $this->entity->getData;
+        return $this->entity->getData();
     }
 
     /*
@@ -84,7 +84,7 @@ abstract class AbstractMongoManager extends AbstractManager
      * @param array $criteria
      * @param array $retrieveFields, by this param you can set which fields should be retrieved in query
      * */
-    public function find(AbstractEntity $criteria, array $retrieveFields)
+    public function find(array $criteria, array $retrieveFields = [])
     {
         return $this->getMongoCollection()->find($criteria, $retrieveFields);
     }

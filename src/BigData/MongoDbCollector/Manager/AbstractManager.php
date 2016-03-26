@@ -7,15 +7,20 @@
 namespace BigData\MongoDbCollector\Manager;
 
 use \MongoClient as MongoClient;
+use \MongoCollection as MongoCollection;
 
 abstract class AbstractManager
 {
     protected $connection;
+    protected $db;
+    protected $collection;
 
 
     public function __construct()
     {
         $this->connection = new MongoClient("localhost");
+        $this->db = $this->getConnection()->selectDB($this->getMongoDataBaseName());
+        $this->collection =  new MongoCollection($this->getMongoDataBase(), $this->getCollectionName());
     }
 
     /*
@@ -31,7 +36,7 @@ abstract class AbstractManager
      * */
     public function getMongoDataBase()
     {
-        return $this->getConnection()->{$this->getMongoDataBaseName()};
+        return $this->db;
     }
 
     /*
@@ -39,7 +44,7 @@ abstract class AbstractManager
      * */
     public function getMongoCollection()
     {
-        return $this->getMongoDataBase()->{$this->getCollectionName()};
+        return $this->collection;
     }
 
     /*

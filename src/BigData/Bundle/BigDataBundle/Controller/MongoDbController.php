@@ -3,9 +3,16 @@
 
 namespace BigData\Bundle\BigDataBundle\Controller;
 
+use BigData\Bundle\BigDataBundle\Model\Mongo\Entity\Patient;
+use BigData\Bundle\BigDataBundle\Model\Mongo\Manager\PatientManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use \MongoClient as MongoClient;
+use Symfony\Component\Config\Definition\Exception\Exception;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Validator\Exception\ValidatorException;
+
 /**
  * @Route("/mongo")
  */
@@ -16,22 +23,56 @@ class MongoDbController extends Controller
      */
     public function indexAction()
     {
-        echo "<pre>";
-        $connection = new MongoClient("localhost");
-        $db = $connection->bigdata;
-        $collection = $db->serverinfo;
+        /*
+         * @var BigData\Bundle\BigDataBundle\Model\Mongo\Manager\PatientManager $patientManager
+         * */
+        $patientManager = new PatientManager();
 
-        $array = $_SERVER;
+        /*
+         * @var \MongoCursor $result
+         * */
+        $result = $patientManager->find([]);
 
-        $collection->insert($array);
-        echo "ID: ", $array['_id'], "<br>";
+        return $this->render('BigDataBundleBigDataBundle:Default:index.html.twig', [
+            'cursor' => $result
+        ]);
+    }
 
-        $cursor = $collection->find();
+    /**
+     * @Route("/add")
+     */
+    public function addAction(Request $request)
+    {
+        try {
+            if (!$request->isMethod('get')) {
+                throw new Exception("Expected POST request method");
+            }
 
-        foreach ($cursor as $obj) {
-            print_r($obj);
+            $properties = $_REQUEST;;
+
+            print_r($properties);
+
+            if (!count($properties)) {
+                throw new ValidatorException("Error - empty data");
+            }
+
+            /*
+             * @var BigData\Bundle\BigDataBundle\Model\Mongo\Manager\PatientManager $patientManager
+             * */
+            $patientManager = new PatientManager();
+            /*
+             * @var BigData\Bundle\BigDataBundle\Model\Mongo\Entity\Patient $patient
+             * */
+            $patient = new Patient();
+
+            $patient->setData($properties);
+
+            $patientManager->preset($patient)->insert();
+
+        } catch (Exception $e) {
+            throw $e;
         }
 
-        return $this->render('BigDataBundleBigDataBundle:Default:index.html.twig');
+        return JsonResponse::create($patient->getData());
     }
 }
