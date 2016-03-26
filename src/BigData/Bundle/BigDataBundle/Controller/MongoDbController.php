@@ -48,7 +48,7 @@ class MongoDbController extends Controller
                 throw new Exception("Expected POST request method");
             }
 
-            $properties = $_REQUEST;;
+            $properties = $_REQUEST;
 
             print_r($properties);
 
